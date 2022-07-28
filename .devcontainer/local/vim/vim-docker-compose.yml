@@ -1,0 +1,65 @@
+version: "3.8" # Docker Compose File Version
+services:
+  neural_style_transfer:
+    # Set the name of the Container
+    container_name: "${PROJECT_NAME:-neural_style_transfer}"
+
+    # Add dev as Fallback if no ENV_TYPE is present
+    # Add 1 as Fallback if no PROJECT_VERSION is present
+    image: "${PROJECT_NAME:-neural_style_transfer}_${ENV_TYPE:-dev}:${PROJECT_VERSION:-1}"
+
+    labels:
+      maintainer: "david-engelmann"
+
+    # Add a user, in this case we will set it to root
+    user: root
+
+    # Load Vim env Files / comment out to use the docker-compose.yml 
+    #env_file:
+      #- ../.devcontainer/local/vim/vim-devcontainer.env  # Will Override build.args
+
+    # ports:
+      #- 5000:5000
+
+    # Comment Out to Inherit the original docker-compose.yml command
+    #command: /bin/sh -c "while sleep 1000; do :; done" # Keeps container up for debuging # Keeps container up for debuging 
+    
+    # set up vim during intial loading (Moved to vim_setup.sh to persit)
+    # command: >
+        # /bin/sh -c "sudo chmod +x ./.devcontainer/scripts/vim_setup.sh && 
+                    # bash ./.devcontainer/scripts/vim_setup.sh &&
+                    # while sleep 1000; do :; done" 
+
+    # Comment Out to Inherit the original docker-compose.yml working_dir
+    #working_dir: /workspaces/neural_style_transfer #/.devcontainer/local
+
+    volumes:
+      # Custom vimrc
+      - type: "bind"
+        read_only: true
+        source: "../../.devcontainer/local/vim/vimrc"
+        target: "/usr/share/vim/vimrc"
+
+    # Define build command for the service
+    build:
+      # Comment Out to Inherit the original docker-compose.yml context
+      #context: "../"  # Set Context Up a Folder to Work in the current folder 
+
+      # Dockerfile with additional commands for VIM Installation 
+      dockerfile: "./.devcontainer/local/vim/Dockerfile.vim" # Provide the Dockerfile path based on Context
+      
+      # Pass Build Arguments can lean on .env file if that approach is used      
+      args:
+        PROJECT_NAME: "${PROJECT_NAME:-neural_style_transfer}"
+        PROJECT_VERSION: "${PROJECT_VERSION:-1}"
+        ENV_TYPE: "${ENV_TYPE:-dev}"
+        VARIANT: "${VARIANT:-dev-hirsute}"
+        UBUNTU_VERSION: "${UBUNTU_VERSION:-21.04}"
+        PYTHON_VERSION: "${PYTHON_VERSION:-3.9}"
+        HISTFILE: "${HISTFILE:-/root/.bash_history}"
+        VIRTUAL_ENV: "${VIRTUAL_ENV:-/opt/venv}"
+    
+    # Use if you desire two services, with one building after the first is done
+    # useful if you Dockerfile uses a custom image as the FROM statement      
+    # depends_on:
+      # - neural_style_transfer  

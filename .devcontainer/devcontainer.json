@@ -1,0 +1,67 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.217.4/containers/ubuntu
+{
+	"name": "neural_style_transfer",
+
+	// 1st Approach:
+	// Declare location of Dockerfile, set the context and pass build args
+	//"build": {
+		//"dockerfile": "Dockerfile",
+		// Update 'VARIANT' to pick an Ubuntu version: hirsute, focal, bionic
+		// Use hirsute or bionic on local arm64/Apple Silicon.
+		// Set Context Up a Folder to work outside of .devcontainer
+		//"context": "..",
+		//"args": { "VARIANT": "hirsute" }
+	//},
+	// Mounts for Volumns
+	//"mounts": [
+		//"source=${env:HOME}/neural_style_transfer, target=/workspaces/neural_style_transfer, type=bind, consistency=cached"
+	//]
+
+	// 2nd Approach utilizes a docker-compose.yml and is more configurable
+	"dockerComposeFile": [
+		"docker/docker-compose.yml"
+		//"./local/vim/vim-docker-compose.yml"
+	],
+
+	// Name of the service to run from the docker compose file/s
+	"service": "neural_style_transfer",
+
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"workbench.colorTheme": "Visual Studio Dark",
+		"editor.tabSize": 4,
+		"terminal.integrated.fontFamily": "DejaVu Sans Mono for Powerline"
+	},
+
+
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"ms-python.python",
+		"ms-vscode-remote.remote-containers",
+		"ms-vscode-remote.remote-ssh",
+		"ms-vscode-remote.remote-ssh-edit",
+		"redhat.vscode-yaml",
+		"ms-azuretools.vscode-docker",
+		"vscodevim.vim"
+	],
+
+	// Supply WorkspaceFoler in Container
+	"workspaceFolder": "/workspaces/neural_style_transfer",
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [8080],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "uname -a",
+
+	// Turn Container off when exiting
+	"shutdownAction": "none",
+
+	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	//"remoteUser": "root",
+	"features": {
+		"git": "latest",
+		"python": "3.8"
+	}
+}

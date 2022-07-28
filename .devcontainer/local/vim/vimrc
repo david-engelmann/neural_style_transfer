@@ -1,0 +1,359 @@
+" All system-wide defaults are set in $VIMRUNTIME/debian.vim and sourced by
+" the call to :runtime you can find below.  If you wish to change any of those
+" settings, you should do it in this file (/etc/vim/vimrc), since debian.vim
+" will be overwritten everytime an upgrade of the vim packages is performed.
+" It is recommended to make changes after sourcing debian.vim since it alters
+" the value of the 'compatible' option.
+  
+let $MYVIMRC="/usr/share/vim/vimrc"
+
+runtime! debian.vim
+
+" Vim will load $VIMRUNTIME/defaults.vim if the user does not have a vimrc.
+" This happens after /etc/vim/vimrc(.local) are loaded, so it will override
+" any settings in these files.
+" If you don't want that to happen, uncomment the below line to prevent
+" defaults.vim from being loaded.
+" let g:skip_defaults_vim = 1
+
+" Uncomment the next line to make Vim more Vi-compatible
+" NOTE: debian.vim sets 'nocompatible'.  Setting 'compatible' changes numerous
+" options, so any other options should be set AFTER setting 'compatible'.
+"set compatible
+
+" Vim5 and later versions support syntax highlighting. Uncommenting the next
+" line enables syntax highlighting by default.
+
+if has("syntax")
+  syntax on
+endif
+
+" If using a dark background within the editing area and syntax highlighting
+" turn on this option as well
+
+" Uncomment the following to have Vim jump to the last position when
+" reopening a file
+"au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+
+" Uncomment the following to have Vim load indentation rules and plugins
+" according to the detected filetype.
+"filetype plugin indent on
+
+" The following are commented out as they cause vim to behave a lot
+" differently from regular Vi. They are highly recommended though.
+"set showcmd        " Show (partial) command in status line.
+"set showmatch      " Show matching brackets.
+"set ignorecase     " Do case insensitive matching
+"set smartcase      " Do smart case matching
+"set incsearch      " Incremental search
+"set autowrite      " Automatically save before commands like :next and :make
+"set hidden     " Hide buffers when they are abandoned
+"set mouse=a        " Enable mouse usage (all modes)
+
+" Custom Vim Settings - David
+" Set Font
+if has('gui_running')
+  " Font settings.
+  if has("win32") || has("win64")
+    set guifont=Consolas:h10
+  elseif has("mac")
+    set guifont=Menlo:h12
+  else
+   set guifont=Cascadia\ Code\ PL
+  endif
+endif
+
+set autoindent
+set indentexpr=off
+set expandtab
+set tabstop=4
+set shiftwidth=4
+set sw=4
+set textwidth=80
+set nohls
+set noshowmatch
+syntax enable
+setlocal spell spelllang=en_us
+set nospell
+set undofile
+set title
+set hidden
+set wildmode=longest:full,full
+set list
+set listchars=tab:>\ ,trail:.
+set clipboard=unnamedplus
+
+" Keep visual section after indent"
+vnoremap < <gv
+vnoremap > >gv
+
+" If using a dark background within the editing area and syntax highlighting
+set background=dark
+autocmd VimEnter * set vb t_vb=
+set modeline
+set nojoinspaces " stop 2-space after period
+
+" Source .vimrc on change. - Cant Find MYVIMRC
+"autocmd vimrc BufWritePost /usr/share/vim/vimrc source /usr/share/vim/vimrc
+autocmd! BufWritePost .vimrc source $MYVIMRC | echom "Reloaded .vimrc on change"
+
+" Switch between tabs with Shift-h and Shift-l
+nnoremap H gT
+nnoremap L gt
+
+" Absolute Line Numbers
+" set number
+" set nu
+" Relative Line Numbers
+" set relativenumber
+" set rnu
+" Hybrid Lines
+" set number relativenumber
+" set nu rnu
+" Hybrid Lines with Absolute in Insert
+:set number
+
+:augroup numbertoggle
+:  autocmd!
+:  autocmd BufEnter,FocusGained,InsertLeave,WinEnter * if &nu && mode() != "i" | set rnu   | endif
+:  autocmd BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu                  | set nornu | endif
+:augroup END
+
+set ruler
+
+" F4 to search for the instances of a function call
+  nnoremap <F4> :grep! "\<<cword>\>" . -r<CR>:copen<CR>
+
+" Map Caps Lock to Escape Key (only remap when all instances are closed)
+" Only Neccesary if not using Tpope's Capslock Plugin
+"au BufEnter * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
+"au BufLeave * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Caps_Lock'
+" Remap when one instance is closed
+"au VimEnter * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
+"au VimLeave * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Caps_Lock'
+" Uncomment if you wish to have quite vim
+" set shortmess=AITstW
+set noshowcmd " Do not need --NORMAL-- Displayed when using airline plugin
+
+" Install vim-plug if it doesn't installed yet - Moved Logic to vim_setup.sh
+if empty(glob('~/.vim/autoload/plug.vim'))
+    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+" NERDTree Config
+"clt+n to open, \+n+t, \+n+f
+nmap <C-n> :NERDTreeToggle<CR>
+nmap <leader>nt :NERDTreeToggle<CR>
+nmap <leader>nf :NERDTreeFind<CR>
+
+" NERDTree colors for different file extensions
+" https://github.com/scrooloose/nerdtree/issues/433#issuecomment-92590696
+function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)
+ exec 'autocmd filetype nerdtree highlight ' . a:extension .' ctermbg='. a:bg .' ctermfg='. a:fg .' guibg='. a:guibg .' guifg='. a:guifg
+ exec 'autocmd filetype nerdtree syn match ' . a:extension .' #^\s\+.*'. a:extension .'$#'
+endfunction
+
+call NERDTreeHighlightFile('jade', 'green', 'none', 'green', '#151515')
+call NERDTreeHighlightFile('ini', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('md', 'blue', 'none', '#3366FF', '#151515')
+call NERDTreeHighlightFile('yml', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('yaml', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('config', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('conf', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('json', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('html', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('styl', 'cyan', 'none', 'cyan', '#151515')
+call NERDTreeHighlightFile('css', 'cyan', 'none', 'cyan', '#151515')
+call NERDTreeHighlightFile('coffee', 'Red', 'none', 'red', '#151515')
+call NERDTreeHighlightFile('js', 'Red', 'none', '#ffa500', '#151515')
+call NERDTreeHighlightFile('php', 'Magenta', 'none', '#ff00ff', '#151515')
+call NERDTreeHighlightFile('py', 'yellow', 'none', 'yellow', '#151515')
+
+" Custom plugins for vim - David
+call plug#begin()
+
+" Automatically install missing plugins on startup
+if !empty(filter(copy(g:plugs), '!isdirectory(v:val.dir)'))
+  autocmd VimEnter * PlugInstall | q
+endif
+
+" open urls in the browser
+Plug 'tyru/open-browser.vim'
+" upgrade vim status bar
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'powerline/powerline' , {'rtp': 'powerline/bindings/vim/'}
+" show open tabs in status bar
+" Add Buffer
+let g:airline#extensions#tabline#enabled = 1
+set hidden     " Hide buffers when they are abandoned
+let g:airline#extensions#tabline#left_sep = ''
+let g:airline#extensions#tabline#left_alt_sep = ''
+let g:airline#extensions#tabline#right_sep = ''
+let g:airline#extensions#tabline#right_alt_sep = ''
+
+" Open a new empty buffer (\T)
+nmap <leader>T :enew<CR>
+
+" Move to the next buffer (\l)
+nmap <leader>l :bnext<CR>
+
+" Move to the previous buffer (\h)
+nmap <leader>h :bprevious<CR>
+
+" Close current buffer and move to previous one (close tab) (\bq)
+nmap <leader>bq :bp <BAR> bd #<CR>
+
+" Show all open buffers and their status (\bl)
+nmap <leader>bl :ls<CR>
+
+" WORKAROUND WITH OUT POWERLINE FONTS
+" let g:airline#extensions#tabline#left_sep = ' '
+" let g:airline#extensions#tabline#left_alt_sep = '|'
+
+" enable powerline fonts
+let g:airline_powerline_fonts = 1
+let g:airline_left_sep = ''
+let g:airline_right_sep = ''
+
+" enable ascii fonts
+" let g:airline_symbols_ascii = 1
+" the separator used on the left side
+" let g:airline_left_sep='>'
+" the separator used on the right side
+" let g:airline_right_sep='<'
+
+" keep default path formatter
+let g:airline#extensions#tabline#formatter = 'default'
+" Select Theme
+let g:airline_theme='deus'
+
+" Let Airline access ALE Linting
+let g:airline#extensions#ale#enabled = 1
+
+" Let Airline access Tpope's Capslock
+let g:airline#extensions#capslock#enabled = 1
+
+" Let Airline display branch name
+let g:airline#extensions#branch#enabled = 1
+
+" Start by checking if the symbol dict exist
+" Fix broken Symbols
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+endif
+
+" unicode symbols
+let g:airline_left_sep = '»'
+let g:airline_left_sep = '▶'
+let g:airline_right_sep = '«'
+let g:airline_right_sep = '◀'
+let g:airline_symbols.linenr = '␊'
+let g:airline_symbols.linenr = '␤'
+let g:airline_symbols.linenr = '¶'
+let g:airline_symbols.paste = 'ρ'
+let g:airline_symbols.paste = 'Þ'
+" let g:airline_symbols.space = "\ua0" " Uncomment if Space issue arises
+" let g:airline_symbols.colnr = ' ℅:' " Column Number, Sticking with Default
+let g:airline_symbols.whitespace = 'Ξ'
+
+" airline symbols
+" let g:airline_left_sep = ''
+" let g:airline_left_alt_sep = ''
+" let g:airline_right_sep = ''
+" let g:airline_right_alt_sep = ''
+" let g:airline_symbols.branch = ''
+" let g:airline_symbols.readonly = ''
+" let g:airline_symbols.linenr = ''
+" let g:airline_symbols.maxlinenr = '' " Appears Next to Max Line Num, Find Good Char
+" let g:airline_symbols.dirty=' ' " Appears Next to the Branch Name, Find Good Char
+
+
+" Remaining Missing Glyphs - INVESTIGATE
+" let g:airline_left_sep = '⮀'
+" let g:airline_left_alt_sep = '⮁'
+" let g:airline_right_sep = '⮂'
+" let g:airline_right_alt_sep = '⮃'
+" let g:airline_symbols.branch = '⭠'
+" let g:airline_symbols.readonly = '⭤'
+" let g:airline_symbols.linenr = '⭡'
+
+" Tim Pope plugins
+Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-dispatch'
+Plug 'tpope/vim-eunuch'
+Plug 'tpope/vim-capslock'
+Plug 'tpope/vim-repeat'
+
+" Finder
+Plug 'ctrlpvim/ctrlp.vim'
+
+" Fuzzy Finder
+" :Files
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+" Fuzzy Finder Key mappings
+" :Files to Cltr+f
+nnoremap <silent> <C-f> :Files<CR>
+" :Rg to <Leader>f (\f)
+nnoremap <silent> <Leader>f :Rg<CR>
+" :Buffers to <Leader>b (\b)
+nnoremap <silent> <Leader>b :Buffers<CR>
+" :Commits to <Leader>g (\g)
+nnoremap <silent> <Leader>g :Commits<CR>
+
+" :Ack, :AckAdd, :LAck, :LAckAdd
+Plug 'mileszs/ack.vim'
+if executable('ag')
+    let g:ackprg = 'ag --vimgrep'
+endif
+
+" Easy Align
+Plug 'junegunn/vim-easy-align'
+
+" Color Scheme
+Plug 'rafi/awesome-vim-colorschemes'
+
+" Python Indenting
+Plug 'michaeljsmith/vim-indent-object'
+Plug 'nathanaelkane/vim-indent-guides'
+" Linting
+Plug 'w0rp/ale'
+
+" NERDTree for navigating files
+Plug 'scrooloose/nerdtree'
+"Plug 'preservim/nerdtree' |
+    \ Plug 'Xuyuanp/nerdtree-git-plugin' |
+    \ Plug 'ryanoasis/vim-devicons' " Caused Breaking Symbols in Airline
+
+
+" Python Virtual Env Support
+" :VirtualEnvList
+" :VirtualEnvActivate
+Plug 'jmcantrell/vim-virtualenv'
+
+" Jedi for Autocomplete
+Plug 'davidhalter/jedi-vim'           " Python code completion.
+let g:jedi#force_py_version=$PYTHON_VERSION
+let g:jedi#auto_vim_configuration=0
+let g:jedi#popup_on_dot=0
+
+" Pandoc for vim
+" Plug 'vim-pandoc/vim-pandoc'          " Pandoc integration for Vim.
+" Only syntax highlight pandoc files.
+" let g:pandoc#filetypes#pandoc_markdown=0
+
+set encoding=utf-8
+
+call plug#end()
+
+" Source a global configuration file if available
+if filereadable("/etc/vim/vimrc.local")
+  source /etc/vim/vimrc.local
+endif

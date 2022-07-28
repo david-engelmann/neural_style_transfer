@@ -1,0 +1,31 @@
+" Display options
+syntax on
+
+
+filetype plugin indent on       " Do filetype detection and load custom file plugins and indent files
+" Always edit file, even when swap file is found
+set shortmess+=A
+set hidden                      " Don't abandon buffers moved to the background
+set wildmenu                    " Enhanced completion hints in command line
+set backspace=eol,start,indent  " Allow backspacing over indent, eol, & start
+set complete=.,w,b,u,U,t,i,d    " Do lots of scanning on tab completion
+set directory=~/.vim/swap       " Directory to use for the swap file
+set diffopt=filler,iwhite       " In diff mode, ignore whitespace changes and align unchanged lines
+set nowrap
+set visualbell
+set mouse=a
+" Indentation and tabbing
+set autoindent smartindent
+set smarttab                    " Make <tab> and <backspace> smarter
+set tabstop=2
+set shiftwidth=2
+set expandtab
+set incsearch
+set magic
+
+" Search settings
+set ignorecase
+set smartcase
+set hlsearch
+set incsearch
+set showmatch

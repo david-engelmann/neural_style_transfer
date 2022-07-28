@@ -1,0 +1,1 @@
+Use Neural Style Transfer to turn my headshot into a Bob Dylan Self Portrait. It's no Nashville Skyline but it will do!

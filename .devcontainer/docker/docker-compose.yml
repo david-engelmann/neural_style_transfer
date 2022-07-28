@@ -1,0 +1,68 @@
+version: "3.8" # Docker Compose File Version
+services:
+  neural_style_transfer:
+    # Set the name of the Container
+    container_name: "${PROJECT_NAME:-neural_style_transfer}"
+
+    # Add dev as Fallback if no ENV_TYPE is present
+    # Add 1 as Fallback if no PROJECT_VERSION is present
+    image: "${PROJECT_NAME:-neural_style_transfer}_${ENV_TYPE:-dev}:${PROJECT_VERSION:-1}"
+
+    labels:
+      maintainer: "david-engelmann"
+
+    # Add a user, in this case we will set it to root
+    user: root
+
+    # Either Set Enviroment Variables her or in the devcontainer.json
+    # if alot of variables are needed, a .env file will be the best approach
+
+    #environment:
+      #ENV_TYPE: "dev"
+      #...
+
+    env_file:
+      - ../../.devcontainer/docker/devcontainer.env
+    
+    # Keep container up for debuging
+    command: /bin/sh -c "while sleep 1000; do :; done"
+
+    working_dir: /workspaces/neural_style_transfer
+
+    # Set Binds/Volumes here instead of devcontainer.json
+    volumes:
+      
+      # Set up the Local Project Folder as a bind Mount / Dev Enviroment Style
+      - type: "bind"
+        source: "../../"
+        target: "/workspaces/neural_style_transfer"
+      
+      # Persit Bash History
+      - type: "bind"
+        source: "../../.devcontainer/local/.bash_history"
+        target: "/root/.bash_history"
+
+      # Persit .bashrc
+      - type: "bind"
+        source: "../../.devcontainer/shared/.bashrc"
+        target: "/root/.bashrc"
+    
+    # Define Build Command for the service
+    build:
+      context: "../../" # Set Context up a folder to work outside of .devcontainer
+      dockerfile: "./.devcontainer/docker/Dockerfile" # Provide the Dockerfile path based on Context
+
+      # Pass Build Arguments can lean on .env file if that approach is used
+      args:
+        PROJECT_NAME: "${PROJECT_NAME:-neural_style_transfer}"
+        PROJECT_VERSION: "${PROJECT_VERSION:-1}"
+        ENV_TYPE: "${ENV_TYPE:-dev}"
+        VARIANT: "${VARIANT:-dev-hirsute}"
+        UBUNTU_VERSION: "${UBUNTU_VERSION:-21.04}"
+        PYTHON_VERSION: "${PYTHON_VERSION:-3.9}"
+        HISTFILE: "${HISTFILE:-/root/.bash_history}"
+        VIRTUAL_ENV: "${VIRTUAL_ENV:-/opt/venv}"
+    
+    # Declare Port
+    #ports:
+      #- "${FLASK_PORT}:${FLASK_PORT}"
